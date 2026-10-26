@@ -6,7 +6,8 @@ Fonte: Boletins de Urna (arquivo `-bu.dat`, ASN.1/DER) publicados em resultados.
 
 ## Resumo
 
-- Seções com BU processadas: **499.248**; com horário de encerramento: **499.178**; seções agregadas (votos no BU da seção principal): 17.931.
+- Seções (exceto agregadas): **499.248**, das quais 41 não instaladas; com horário de encerramento: **499.178**; seções agregadas (votos no BU da seção principal): 17.931.
+- Formato da distribuição: 98.16% das seções encerraram entre 17:00 e 17:15; entre 17:30 e 19:00 encerraram só 1.267 seções, e há um **segundo pico entre 19:00 e 19:15** (6.316 seções, 1.27%), compatível com encerramento coordenado às 19h nos locais com prorrogação (ver seção 3).
 - Urnas encerradas (Brasil, % das seções): até 17:30 **98.47%**, até 18:00 **98.58%**, até 18:30 **98.64%**, até 19:00 **98.73%**; depois das 19:00: **1.27%** (6.352 seções).
 - Vencedor com todas as urnas: **LULA (13)** (51.79% dos válidos, margem 4.430.191 votos). **O vencedor não muda** em nenhum dos 4 cortes.
 
