@@ -8,7 +8,7 @@ Fonte: Boletins de Urna (arquivo `-bu.dat`, ASN.1/DER) publicados em resultados.
 
 - Seções com BU processadas: **499.248**; com horário de encerramento: **499.178**; seções agregadas (votos no BU da seção principal): 17.931.
 - Urnas encerradas (Brasil, % das seções): até 17:30 **98.47%**, até 18:00 **98.58%**, até 18:30 **98.64%**, até 19:00 **98.73%**; depois das 19:00: **1.27%** (6.352 seções).
-- Vencedor com todas as urnas: **LULA (13)** (51.79% dos válidos, margem 4.430.099 votos). **O vencedor não muda** em nenhum dos 4 cortes.
+- Vencedor com todas as urnas: **LULA (13)** (51.79% dos válidos, margem 4.430.191 votos). **O vencedor não muda** em nenhum dos 4 cortes.
 
 ## Validação: soma dos BUs × resultado oficial do TSE
 
@@ -16,11 +16,11 @@ Oficial TSE Brasil (totalização de 25/10/2026 23:26:38; seções totalizadas 4
 
 | Brasil | LULA | FLAVIO BOLSONARO | brancos | nulos | comparecimento |
 |---|---:|---:|---:|---:|---:|
-| soma dos BUs | 64.255.787 | 59.825.688 | 1.430.484 | 2.723.284 | 128.235.243 |
+| soma dos BUs | 64.256.232 | 59.826.041 | 1.430.496 | 2.723.305 | 128.236.074 |
 | oficial TSE | 64.256.232 | 59.826.041 | 1.430.496 | 2.723.305 | 128.236.074 |
-| diferença | -445 | -353 | -12 | -21 | -831 |
+| diferença | +0 | +0 | +0 | +0 | +0 |
 
-**Não bate exatamente** — ver diferença acima e seções com problema abaixo.
+**Bate exatamente com o oficial** (votos dos candidatos).
 
 <details><summary>Por UF</summary>
 
@@ -53,7 +53,7 @@ Oficial TSE Brasil (totalização de 25/10/2026 23:26:38; seções totalizadas 4
 | SE | 989.041 | 433.354 | 13.135 | 31.129 | 1.466.659 | +0, +0, +0, +0, +0 |
 | SP | 12.119.274 | 14.139.178 | 389.606 | 716.331 | 27.364.389 | +0, +0, +0, +0, +0 |
 | TO | 442.962 | 467.916 | 8.059 | 35.826 | 954.763 | +0, +0, +0, +0, +0 |
-| ZZ | 199.709 | 171.144 | 4.663 | 5.096 | 380.612 | -445, -353, -12, -21, -831 |
+| ZZ | 200.154 | 171.497 | 4.675 | 5.117 | 381.443 | +0, +0, +0, +0, +0 |
 
 </details>
 
@@ -267,11 +267,11 @@ Cada simulação **remove inteiramente** as seções cujo encerramento foi no ho
 
 |  | todas as urnas | corte 17:30 | corte 18:00 | corte 18:30 | corte 19:00 |
 |---|---:|---:|---:|---:|---:|
-| votos LULA | 64.255.787 | 63.075.477 | 63.155.134 | 63.201.745 | 63.265.968 |
-| votos FLAVIO BOLSONARO | 59.825.688 | 58.873.193 | 58.929.514 | 58.964.258 | 59.021.593 |
+| votos LULA | 64.256.232 | 63.075.922 | 63.155.579 | 63.202.190 | 63.266.413 |
+| votos FLAVIO BOLSONARO | 59.826.041 | 58.873.546 | 58.929.867 | 58.964.611 | 59.021.946 |
 | % válidos LULA | 51.785 | 51.723 | 51.731 | 51.734 | 51.735 |
 | % válidos FLAVIO BOLSONARO | 48.215 | 48.277 | 48.269 | 48.266 | 48.265 |
-| margem (votos) | +4.430.099 | +4.202.284 | +4.225.620 | +4.237.487 | +4.244.375 |
+| margem (votos) | +4.430.191 | +4.202.376 | +4.225.712 | +4.237.579 | +4.244.467 |
 | margem (p.p.) | +3.570 | +3.446 | +3.461 | +3.469 | +3.471 |
 | vencedor | LULA (13) | LULA (13) | LULA (13) | LULA (13) | LULA (13) |
 | vencedor muda? | — | não | não | não | não |
@@ -281,7 +281,7 @@ Cada simulação **remove inteiramente** as seções cujo encerramento foi no ho
 | votos LULA excluídos | 0 | 1.180.310 | 1.100.653 | 1.054.042 | 989.819 |
 | votos FLAVIO BOLSONARO excluídos | 0 | 952.495 | 896.174 | 861.430 | 804.095 |
 
-Oficial TSE: LULA 64.256.232, FLAVIO BOLSONARO 59.826.041 — diferença para “todas as urnas”: -445 / -353.
+Oficial TSE: LULA 64.256.232, FLAVIO BOLSONARO 59.826.041 — diferença para “todas as urnas”: +0 / +0.
 
 Composição dos votos nas seções excluídas (só as seções tardias):
 
@@ -369,19 +369,20 @@ Composição dos votos nas seções excluídas (só as seções tardias):
 | bit | descrição | seções | aptos | comparecimento |
 |---|---:|---:|---:|---:|
 | 1 | sem aux.json | 0 | 0 | 0 |
-| 2 | sem BU | 70 | 0 | 0 |
+| 2 | sem BU | 0 | 0 | 0 |
 | 4 | erro ao decodificar BU | 0 | 0 | 0 |
-| 8 | sem horário de encerramento | 0 | 0 | 0 |
-| 16 | urna não ordinária (contingência) | 5.714 | 1.846.412 | 1.483.841 |
-| 32 | BU não é de votação em urna (SA/manual) | 16 | 4.953 | 3.829 |
+| 8 | sem horário de encerramento | 29 | 2.054 | 831 |
+| 16 | urna não ordinária (contingência) | 5.743 | 1.848.466 | 1.484.672 |
+| 32 | BU não é de votação em urna (SA/manual) | 45 | 7.007 | 4.660 |
 | 64 | mais de um BU publicado | 0 | 0 | 0 |
 | 128 | BU sem o cargo | 0 | 0 | 0 |
 | 256 | horário de encerramento atípico | 0 | 0 | 0 |
 | 512 | votos fora dos 2 candidatos | 0 | 0 | 0 |
 | 1024 | fuso não inferido (padrão UF) | 0 | 0 | 0 |
-| — | **qualquer flag** | 5.798 | 1.850.684 | 1.487.107 |
+| 2048 | seção não instalada | 41 | 0 | 0 |
+| — | **qualquer flag** | 5.798 | 1.852.738 | 1.487.938 |
 
-Combinações tipoUrna/tipoArquivo encontradas nos BUs: {'1/1': 493450, '4/1': 5712, '1/2': 14, '6/2': 2, 'None/None': 70}.
+Combinações tipoUrna/tipoArquivo encontradas nos BUs: {'1/1': 493450, '4/1': 5712, '1/2': 14, '6/2': 2, 'None/None': 41, '3/5': 29}.
 
 ## 5. Fuso horário
 
@@ -391,7 +392,7 @@ O relógio da urna grava **hora local**. Como as urnas abrem às 8h de Brasília
 |---|---:|---:|---:|---:|
 | AC | +2h | +2h: 22 | 0 | — |
 | AL | +0h | +0h: 102 | 0 | — |
-| AM | +1h | +1h: 51, +2h: 11 | 11 | 02313 (+2h), TABATINGA (+2h), 02291 (+2h), 02399 (+2h), 02135 (+2h), 02496 (+2h), 02054 (+2h), 02917 (+2h), 02020 (+2h), ITAMARATI (+2h), 02755 (+2h) |
+| AM | +1h | +1h: 51, +2h: 11 | 11 | ENVIRA (+2h), TABATINGA (+2h), EIRUNEPÉ (+2h), IPIXUNA (+2h), BENJAMIN CONSTANT (+2h), JUTAÍ (+2h), ATALAIA DO NORTE (+2h), AMATURÁ (+2h), GUAJARÁ (+2h), ITAMARATI (+2h), SÃO PAULO DE OLIVENÇA (+2h) |
 | AP | +0h | +0h: 16 | 0 | — |
 | BA | +0h | +0h: 417 | 0 | — |
 | CE | +0h | +0h: 184 | 0 | — |
@@ -426,6 +427,8 @@ No exterior (ZZ) as urnas abrem às 8h **locais**; o mesmo método converte o ho
 2. `…/arquivo-urna/<pleito>/config/<uf>/<uf>-p<pleito>-cs.json` → lista de seções (entradas com `nsp` são seções
    agregadas, sem BU próprio).
 3. Por seção: `…-aux.json` → nome e diretório (hash) do `-bu.dat`; baixa só o BU (≈0,8–1 KB), em memória.
+   Seções apuradas pelo Sistema de Apuração (cédula, sobretudo no exterior) não têm `-bu.dat`: usa-se o
+   `-busa.dat` (mesmo formato), sem horário de encerramento de urna (flag 32 + 8).
    `.imgbu` não está publicado em 2026 (404 em 100% da amostra); `.logjez`/`.rdv` não são baixados.
 4. Decodificação DER do `EntidadeEnvelopeGenerico` → `EntidadeBoletimUrna` (estrutura do `bu.asn1` da
    Documentação Técnica do TSE, conferida em BUs reais): `dadosSecao.dataHoraEncerramento`, `qtdEleitoresAptos`,
