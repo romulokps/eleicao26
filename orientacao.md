@@ -57,3 +57,21 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
 - 2026-10-26: a integração não tem permissão para `workflow_dispatch` via API; a sonda
   (`probe.yml`) também dispara por push em `claude/**` lendo `probe_args.txt`.
   O workflow principal mantém `workflow_dispatch` para uso manual pelo usuário.
+- 2026-10-26: **ele-c.json** → pleito `3221` (ele2026, 25/10/2026); eleição `6258` = "Eleição Ordinária Federal -
+  2026 2º Turno" (Presidente, cargo 1). Governador 2º turno = eleição `6260` (cargo 3). Descoberta automática em
+  `src/tse.py::descobrir_eleicao`.
+- 2026-10-26: **cs.json** (`arquivo-urna/3221/config/<uf>/<uf>-p003221-cs.json`): `abr[].mu[].zon[].sec[]` com
+  `ns`; entradas com `nsp` são **seções agregadas** (sem BU próprio; votos no BU da principal) e `nsa` lista as
+  agregadas da principal. `da/ha` = horário de recebimento (NÃO usar).
+- 2026-10-26: **aux.json** (`dados/<uf>/<mun>/<zona>/<secao>/p003221-<uf>-m<mun>-z<zona>-s<secao>-aux.json`):
+  `hashes[].{hash, st, arq[{nm, tp}]}`; arquivos em `<dir>/<hash>/<nm>`, ex. `o03221rr0312300070001-bu.dat`.
+  Tipos: bu, imgbu, log, rdv, vota.
+- 2026-10-26: **.imgbu dá 404 em 20/20 seções** (não publicado em 2026) → decisão: usar **.bu** (≈800–960 B).
+- 2026-10-26: Spec ASN.1 oficial: site do TSE devolve 403 ao runner e não resolve neste container → decodificador
+  DER próprio (`src/bu.py`) seguindo a estrutura do `bu.asn1` de 2022, conferido campo a campo em BUs reais e
+  validado em 20/20 seções (comparecimento = soma dos votos). Hash do aux não é SHA simples do BU (não validado).
+- 2026-10-26: **Fuso**: BU grava hora LOCAL (RR abre 07:00 → UTC−4). Sem horário de verão. Normalização: por
+  município, moda de (8h − hora local de abertura); padrão por UF como fallback. Exterior: relativo às 8h locais.
+- 2026-10-26: Resultado oficial: `ele2026/6258/dados/<uf>/<uf>-c0001-e006258-u.json` (e `br`). Usado só para
+  validação (votos), nunca para horário.
+- 2026-10-26: Disparo: `execucao.json` (push) ou `workflow_dispatch` em `coleta.yml`. Primeiro: RR (validação).
