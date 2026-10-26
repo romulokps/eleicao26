@@ -7,6 +7,7 @@
 !*.md
 !*.txt
 !*.asn1
+!execucao.json
 !dados/secoes_*.parquet
 !*.png
 __pycache__/

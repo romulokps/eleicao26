@@ -1,0 +1,128 @@
+name: coleta-bu
+# Coleta os BUs por UF (matrix), junta e gera relatorio.md.
+# Dispara manualmente (workflow_dispatch) ou por push que altere execucao.json.
+on:
+  workflow_dispatch:
+    inputs:
+      cargo:
+        description: "Código do cargo (1 = Presidente, 3 = Governador)"
+        default: "1"
+      ufs:
+        description: "UFs separadas por vírgula (ex.: rr,ap) ou 'todas' (27 + ZZ)"
+        default: "todas"
+      limite:
+        description: "Só N seções por UF (teste); 0 = todas"
+        default: "0"
+      commit:
+        description: "Commitar parquet/relatório no repositório"
+        type: boolean
+        default: true
+  push:
+    branches: ["**"]
+    paths: ["execucao.json"]
+
+concurrency:
+  group: coleta-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      ufs: ${{ steps.m.outputs.ufs }}
+      ufs_csv: ${{ steps.m.outputs.ufs_csv }}
+      cargo: ${{ steps.m.outputs.cargo }}
+      limite: ${{ steps.m.outputs.limite }}
+      commit: ${{ steps.m.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        env:
+          IN_CARGO: ${{ inputs.cargo }}
+          IN_UFS: ${{ inputs.ufs }}
+          IN_LIMITE: ${{ inputs.limite }}
+          IN_COMMIT: ${{ inputs.commit }}
+        run: python3 src/matriz.py | tee -a "$GITHUB_OUTPUT"
+
+  coleta:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        uf: ${{ fromJson(needs.setup.outputs.ufs) }}
+    env:
+      CARGO: ${{ needs.setup.outputs.cargo }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q -r requirements.txt
+      # checkpoint: só campos extraídos (JSONL), nunca arquivos brutos
+      - uses: actions/cache/restore@v4
+        with:
+          path: checkpoint
+          key: ckpt-${{ env.CARGO }}-${{ matrix.uf }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ckpt-${{ env.CARGO }}-${{ matrix.uf }}-${{ github.run_id }}-
+            ckpt-${{ env.CARGO }}-${{ matrix.uf }}-
+      - name: coleta ${{ matrix.uf }}
+        run: >
+          python src/coleta.py --uf ${{ matrix.uf }} --cargo $CARGO
+          --limite ${{ needs.setup.outputs.limite }} --concorrencia 15 --tempo-max 300
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: checkpoint
+          key: ckpt-${{ env.CARGO }}-${{ matrix.uf }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: secoes-${{ env.CARGO }}-${{ matrix.uf }}
+          path: out/
+          retention-days: 14
+
+  relatorio:
+    needs: [setup, coleta]
+    if: ${{ !cancelled() && needs.setup.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: secoes-${{ needs.setup.outputs.cargo }}-*
+          path: out
+          merge-multiple: true
+      - name: merge + relatório
+        run: >
+          python src/relatorio.py --entrada out --cargo ${{ needs.setup.outputs.cargo }}
+          --ufs-esperadas ${{ needs.setup.outputs.ufs_csv }}
+      - name: resumo no job
+        run: cat relatorio*.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-${{ needs.setup.outputs.cargo }}
+          path: |
+            relatorio*.md
+            fig*.png
+            dados/secoes_*.parquet
+          retention-days: 30
+      - name: commit
+        if: needs.setup.outputs.commit == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f dados/secoes_*.parquet relatorio*.md fig*.png
+          git commit -m "Atualiza dados e relatório (cargo ${{ needs.setup.outputs.cargo }}, UFs ${{ needs.setup.outputs.ufs_csv }})" || exit 0
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
