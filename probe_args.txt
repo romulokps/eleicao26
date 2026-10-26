@@ -1,1 +1,1 @@
-src/probe.py rr 20
+src/probe2.py 3221 rr 20 && python src/probe_doc.py
