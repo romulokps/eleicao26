@@ -42,7 +42,9 @@ jobs:
           IN_UFS: ${{ inputs.ufs }}
           IN_LIMITE: ${{ inputs.limite }}
           IN_COMMIT: ${{ inputs.commit }}
-        run: python3 src/matriz.py | tee -a "$GITHUB_OUTPUT"
+        run: |
+          set -o pipefail
+          python3 src/matriz.py | tee -a "$GITHUB_OUTPUT"
 
   coleta:
     needs: setup
@@ -87,7 +89,7 @@ jobs:
 
   relatorio:
     needs: [setup, coleta]
-    if: ${{ !cancelled() && needs.setup.result == 'success' }}
+    if: ${{ !cancelled() && needs.setup.result == 'success' && needs.coleta.result != 'skipped' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

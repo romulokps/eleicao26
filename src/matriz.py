@@ -1,10 +1,8 @@
 """Monta os parâmetros da execução (matrix de UFs) a partir dos inputs do workflow ou de execucao.json."""
 import json
 import os
-import sys
 
-sys.path.insert(0, os.path.dirname(__file__))
-from tse import UFS  # noqa: E402
+UFS = "ac al am ap ba ce df es go ma mg ms mt pa pb pe pi pr rj rn ro rr rs sc se sp to zz".split()  # = tse.UFS
 
 cfg = {"cargo": "1", "ufs": "todas", "limite": "0", "commit": "true"}
 if os.environ.get("GITHUB_EVENT_NAME") != "workflow_dispatch" and os.path.exists("execucao.json"):
