@@ -56,11 +56,12 @@ async def main():
             r = await c.get(aux)
             print(f"\n=== {uf} {mu} {zo} {se} aux {r.status_code} {len(r.content)}B")
             if r.status_code != 200:
-                print(r.text[:300]); continue
-            j = r.json(); print(json.dumps(j, ensure_ascii=False)[:900])
+                print("RAW cs entry:", raw); continue
+            j = r.json()
+            if i < 2 or len(j.get("hashes", [])) != 1: print(json.dumps(j, ensure_ascii=False)[:900])
             for h in j.get("hashes", []):
-                for nm in h.get("nmarq", []):
-                    ext = nm.rsplit(".", 1)[-1]
+                for a in h.get("arq", []):
+                    nm, ext = a["nm"], a["tp"]
                     if ext not in ("bu", "imgbu"): continue
                     fu = f"{d}/{h['hash']}/{nm}"
                     rr = await c.get(fu); tot[ext] += len(rr.content)
