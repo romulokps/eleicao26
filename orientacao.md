@@ -79,3 +79,8 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
   brancos 2.176; nulos 3.241; comparecimento 308.597; aptos 401.540). 108 seções agregadas; 8 urnas de contingência
   (flag 16); fuso +1h inferido nos 15 municípios. Velocidade ≈76 seções/s com concorrência 15, ≈1,5 KB/seção.
 - 2026-10-26: Rodada Brasil (27 UFs + ZZ) disparada com commit do parquet/relatório ao final.
+- 2026-10-26: Rodada Brasil 1 (run 40260109247): 27 UFs ok em ~1h (SP 103.656 seções a 43 seç/s, bate exato);
+  MG levou 2h10. Soma Brasil ficou −1,44 mi de comparecimento vs oficial: 5.619 seções sem aux/BU por **falha
+  transitória** (S3 do TSE devolve 403 sob carga e o cliente tratava 403 como inexistente). Correção: 403/404
+  re-tentados 3×, repescagem de falhas ao fim da coleta, watchdog de 300 s por seção. Re-execução retoma do
+  checkpoint (cache `ckpt-<cargo>-<uf>-`), re-baixando só as falhas.

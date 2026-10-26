@@ -282,6 +282,16 @@ async def main():
 
     hb = asyncio.create_task(batimento())
     await asyncio.gather(*(worker() for _ in range(a.concorrencia)))
+    # passadas extras só para falhas de download (transitórias sob carga), com pausa e menos concorrência
+    for rodada in (1, 2):
+        falhas = [k for k, r in novos.items() if r["flag"] & RETENTAR]
+        if not falhas or (a.tempo_max and time.time() - t0 > a.tempo_max * 60):
+            break
+        print(f"[{uf}] repescagem {rodada}: {len(falhas)} seções com falha de download", flush=True)
+        await asyncio.sleep(30 * rodada)
+        for k in falhas:
+            fila.put_nowait(k)
+        await asyncio.gather(*(worker() for _ in range(max(2, a.concorrencia // 3))))
     hb.cancel()
     ck.close()
     await cli.fechar()

@@ -141,5 +141,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f dados/secoes_*.parquet relatorio*.md fig*.png
           git commit -m "Atualiza dados e relatório (cargo ${{ needs.setup.outputs.cargo }}, UFs ${{ needs.setup.outputs.ufs_csv }})" || exit 0
-          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"  # arquivos gerados: fica a versão desta execução
           git push origin "HEAD:${GITHUB_REF_NAME}"

@@ -26,8 +26,13 @@ class Cliente:
         )
 
     async def get(self, url) -> bytes:
-        """GET com retry exponencial (+jitter). 403/404 = arquivo inexistente (bucket S3 do TSE)."""
+        """GET com retry exponencial (+jitter).
+
+        O bucket S3 do TSE responde 403/404 tanto para arquivo inexistente quanto, sob carga, de forma
+        transitória; por isso 403/404 também são re-tentados (até 3 vezes) antes de virar NaoEncontrado.
+        """
         espera = 1.0
+        nao_achou = 0
         for t in range(self.tentativas):
             try:
                 async with self.sem:
@@ -37,7 +42,9 @@ class Cliente:
                     self.bytes += len(r.content)
                     return r.content
                 if r.status_code in (403, 404):
-                    raise NaoEncontrado(url)
+                    nao_achou += 1
+                    if nao_achou >= 3:
+                        raise NaoEncontrado(f"{url}: HTTP {r.status_code}")
                 erro = f"HTTP {r.status_code}"
             except NaoEncontrado:
                 raise
