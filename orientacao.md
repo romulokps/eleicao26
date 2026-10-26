@@ -75,3 +75,7 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
 - 2026-10-26: Resultado oficial: `ele2026/6258/dados/<uf>/<uf>-c0001-e006258-u.json` (e `br`). Usado só para
   validação (votos), nunca para horário.
 - 2026-10-26: Disparo: `execucao.json` (push) ou `workflow_dispatch` em `coleta.yml`. Primeiro: RR (validação).
+- 2026-10-26: **Validação RR OK**: soma dos 1.519 BUs = oficial exatamente (Lula 83.505; Flávio Bolsonaro 219.675;
+  brancos 2.176; nulos 3.241; comparecimento 308.597; aptos 401.540). 108 seções agregadas; 8 urnas de contingência
+  (flag 16); fuso +1h inferido nos 15 municípios. Velocidade ≈76 seções/s com concorrência 15, ≈1,5 KB/seção.
+- 2026-10-26: Rodada Brasil (27 UFs + ZZ) disparada com commit do parquet/relatório ao final.
