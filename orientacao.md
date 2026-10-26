@@ -54,7 +54,7 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
 ## Diário de decisões / descobertas
 - 2026-10-26: o container da sessão Claude não alcança `resultados.tse.jus.br` (bloqueio da
   política de rede); toda a exploração é feita dentro do GitHub Actions.
-- 2026-10-26: a integração não tem permissão para `workflow_dispatch` via API; a sonda
+- 2026-10-26: a integração não tem permissão para `workflow_dispatch` via API; a sonda (removida depois de usada)
   (`probe.yml`) também dispara por push em `claude/**` lendo `probe_args.txt`.
   O workflow principal mantém `workflow_dispatch` para uso manual pelo usuário.
 - 2026-10-26: **ele-c.json** → pleito `3221` (ele2026, 25/10/2026); eleição `6258` = "Eleição Ordinária Federal -
