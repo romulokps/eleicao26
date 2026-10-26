@@ -3,8 +3,6 @@ import asyncio, json, re, sys, io, zipfile
 import httpx
 
 BASE = "https://resultados.tse.jus.br/oficial"
-PLEITO, UF, N = sys.argv[1], sys.argv[2], int(sys.argv[3])
-ARQ = f"{BASE}/ele2026/arquivo-urna/{PLEITO}"
 
 
 def tlv_dump(b, depth=0, maxdepth=12, out=None, pos=0, end=None):
@@ -35,6 +33,8 @@ def tlv_dump(b, depth=0, maxdepth=12, out=None, pos=0, end=None):
 
 
 async def main():
+    PLEITO, UF, N = sys.argv[1], sys.argv[2], int(sys.argv[3])
+    ARQ = f"{BASE}/ele2026/arquivo-urna/{PLEITO}"
     async with httpx.AsyncClient(timeout=60, follow_redirects=True,
                                  headers={"User-Agent": "Mozilla/5.0 eleicao26"}) as c:
         url = f"{ARQ}/config/{UF}/{UF}-p{int(PLEITO):06d}-cs.json"
