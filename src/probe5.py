@@ -21,11 +21,18 @@ async def main():
         async def get(u):
             async with sem:
                 r = await c.get(u)
-                return u, r.status_code, r.text[:1500]
+                if r.status_code == 200 and "-c0001-" in u:
+                    j = r.json()
+                    print("JSON", u, {k: v for k, v in j.items() if not isinstance(v, (list, dict))})
+                    for cc in j.get("cand", [])[:4]:
+                        print("   cand", cc)
+                    for k, v in j.items():
+                        if isinstance(v, list) and k != "cand": print("   list", k, str(v)[:300])
+                return u, r.status_code, ""
         res = await asyncio.gather(*(get(u) for u in cands))
         for u, s, t in res:
             if s == 200:
-                print("OK", u); print(t if "ele-c" not in u else "")
+                print("OK", u)
         print("404s:", sum(1 for _, s, _ in res if s != 200))
 
 asyncio.run(main())
