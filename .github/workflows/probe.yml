@@ -1,5 +1,8 @@
 name: probe
 on:
+  push:
+    branches: ['claude/**']
+    paths: ['src/probe*.py', '.github/workflows/probe.yml', 'probe_args.txt']
   workflow_dispatch:
     inputs:
       args:
@@ -17,4 +20,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: python src/${{ inputs.script }} ${{ inputs.args }}
+      - name: sonda
+        run: |
+          if [ -n "${{ inputs.script }}" ]; then python src/${{ inputs.script }} ${{ inputs.args }};
+          else bash -c "python $(cat probe_args.txt)"; fi
