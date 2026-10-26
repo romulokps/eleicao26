@@ -439,6 +439,8 @@ def main():
 2. `…/arquivo-urna/<pleito>/config/<uf>/<uf>-p<pleito>-cs.json` → lista de seções (entradas com `nsp` são seções
    agregadas, sem BU próprio).
 3. Por seção: `…-aux.json` → nome e diretório (hash) do `-bu.dat`; baixa só o BU (≈0,8–1 KB), em memória.
+   Seções apuradas pelo Sistema de Apuração (cédula, sobretudo no exterior) não têm `-bu.dat`: usa-se o
+   `-busa.dat` (mesmo formato), sem horário de encerramento de urna (flag 32 + 8).
    `.imgbu` não está publicado em 2026 (404 em 100% da amostra); `.logjez`/`.rdv` não são baixados.
 4. Decodificação DER do `EntidadeEnvelopeGenerico` → `EntidadeBoletimUrna` (estrutura do `bu.asn1` da
    Documentação Técnica do TSE, conferida em BUs reais): `dadosSecao.dataHoraEncerramento`, `qtdEleitoresAptos`,

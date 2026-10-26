@@ -34,12 +34,14 @@ F_SEM_CARGO = 128      # BU sem a eleição/cargo pedido
 F_HORA_ESTRANHA = 256  # encerramento fora do dia da eleição ou antes das 16h (Brasília)
 F_OUTROS_VOTOS = 512   # votos nominais em número fora dos 2 candidatos ou votos de legenda
 F_FUSO_PADRAO = 1024   # fuso do município não pôde ser inferido; usado o padrão da UF
+F_NAO_INSTALADA = 2048  # aux.json com st "Nao instalada" (seção sem funcionamento, sem arquivos)
 
 FLAGS = {F_SEM_AUX: "sem aux.json", F_SEM_BU: "sem BU", F_ERRO_DECODE: "erro ao decodificar BU",
          F_SEM_HORA: "sem horário de encerramento", F_URNA_NAO_ORD: "urna não ordinária (contingência)",
          F_TIPO_ARQ: "BU não é de votação em urna (SA/manual)", F_MULTI_BU: "mais de um BU publicado",
          F_SEM_CARGO: "BU sem o cargo", F_HORA_ESTRANHA: "horário de encerramento atípico",
-         F_OUTROS_VOTOS: "votos fora dos 2 candidatos", F_FUSO_PADRAO: "fuso não inferido (padrão UF)"}
+         F_OUTROS_VOTOS: "votos fora dos 2 candidatos", F_FUSO_PADRAO: "fuso não inferido (padrão UF)",
+         F_NAO_INSTALADA: "seção não instalada"}
 RETENTAR = F_SEM_AUX | F_SEM_BU  # falhas de download: não contam como processadas no checkpoint
 
 # deslocamento (horas) a somar à hora local para obter Brasília (UTC-3), padrão por UF (sem horário de verão)
@@ -60,12 +62,16 @@ async def processar_secao(cli, pleito, eleicao, cargo, uf, mun, zona, secao):
     if len(hashes) > 1:
         row["flag"] |= F_MULTI_BU
     row["st"] = aux.get("st")
-    # usa o conjunto mais recente que tenha BU
+    if "instalada" in (aux.get("st") or "").lower():
+        row["flag"] |= F_NAO_INSTALADA
+        return row
+    # usa o conjunto mais recente que tenha BU da urna; sem ele, o BU do Sistema de Apuração (busa: cédula/SA)
     alvo = None
-    for h in hashes:
-        for a in h.get("arq", []):
-            if a.get("tp") == "bu":
-                alvo = (h["hash"], a["nm"])
+    for tp in ("busa", "bu"):
+        for h in hashes:
+            for a in h.get("arq", []):
+                if a.get("tp") == tp:
+                    alvo = (h["hash"], a["nm"])
     if not alvo:
         row["flag"] |= F_SEM_BU
         return row
@@ -85,7 +91,7 @@ async def processar_secao(cli, pleito, eleicao, cargo, uf, mun, zona, secao):
         del raw  # bruto descartado: nada vai para o disco
     if b.tipo_urna != 1:
         row["flag"] |= F_URNA_NAO_ORD
-    if b.tipo_arquivo != 1:
+    if b.tipo_arquivo != 1 or alvo[1].endswith("-busa.dat"):
         row["flag"] |= F_TIPO_ARQ
     row["tipo_urna"], row["tipo_arquivo"] = b.tipo_urna, b.tipo_arquivo
     row["abertura"], row["encerramento"], row["emissao"] = b.abertura, b.encerramento, b.emissao

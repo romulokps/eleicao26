@@ -84,3 +84,9 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
   transitória** (S3 do TSE devolve 403 sob carga e o cliente tratava 403 como inexistente). Correção: 403/404
   re-tentados 3×, repescagem de falhas ao fim da coleta, watchdog de 300 s por seção. Re-execução retoma do
   checkpoint (cache `ckpt-<cargo>-<uf>-`), re-baixando só as falhas.
+- 2026-10-26: Rodada 2 (retomada): Brasil bate com o oficial exceto ZZ (−445/−353/−12/−21/−831). Causa: 70
+  seções do exterior **sem `-bu.dat`**: apuradas pelo Sistema de Apuração (`-busa.dat`, mesmo formato ASN.1;
+  sem horário de urna) ou **"Nao instalada"** (hash "0"). Coleta passa a usar busa (flag 32) e a marcar não
+  instaladas (flag 2048, sem nova tentativa).
+- 2026-10-26: Fuso inferido: AM tem 11 municípios em UTC−5 (+2h, ex. Tabatinga, Itamarati); Fernando de
+  Noronha −1h; demais = padrão da UF.
