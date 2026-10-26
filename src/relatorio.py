@@ -423,7 +423,7 @@ def main():
     for uf in ufs_presentes:
         mm = metas[uf]
         div = mm.get("fuso_municipios_divergentes", {})
-        nomesdiv = ", ".join(f"{mm['municipios'].get(k, k)} ({v['h']:+d}h)" for k, v in list(div.items())[:15])
+        nomesdiv = ", ".join(f"{mm['municipios'].get(str(int(k)), k)} ({v['h']:+d}h)" for k, v in list(div.items())[:15])
         fz.append([uf.upper(), f"{mm['fuso_padrao_uf_h']:+d}h",
                    ", ".join(f"{int(k):+d}h: {v}" for k, v in sorted(mm.get("fuso_resumo", {}).items())),
                    str(len(div)), nomesdiv or "—"])
