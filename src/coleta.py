@@ -263,7 +263,10 @@ async def main():
                 s = fila.get_nowait()
             except asyncio.QueueEmpty:
                 return
-            r = await processar_secao(cli, pleito, eleicao, cargo, uf, *s)
+            try:  # watchdog: nenhuma seção pode prender um worker indefinidamente
+                r = await asyncio.wait_for(processar_secao(cli, pleito, eleicao, cargo, uf, *s), 300)
+            except asyncio.TimeoutError:
+                r = {"mun": s[0], "zona": s[1], "secao": s[2], "flag": F_SEM_BU, "erro": "watchdog 300s"}
             novos[s] = r
             ck.write(json.dumps(r, separators=(",", ":")) + "\n")
             n_ok += 1
@@ -272,7 +275,14 @@ async def main():
                 el = time.time() - t0
                 print(f"[{uf}] {n_ok}/{len(pend)}  {n_ok / el:.1f} seç/s  {cli.bytes / 1e6:.1f} MB", flush=True)
 
+    async def batimento():
+        while True:
+            await asyncio.sleep(60)
+            print(f"[{uf}] t={time.time() - t0:.0f}s feitas={n_ok} fila={fila.qsize()} reqs={cli.reqs}", flush=True)
+
+    hb = asyncio.create_task(batimento())
     await asyncio.gather(*(worker() for _ in range(a.concorrencia)))
+    hb.cancel()
     ck.close()
     await cli.fechar()
     if not fila.empty():

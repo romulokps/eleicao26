@@ -192,7 +192,7 @@ def main():
     (n1, c1), (n2, c2) = meta0["candidatos"]
     c1s, c2s = f"{c1} ({n1})", f"{c2} ({n2})"
     ufs_presentes = sorted(metas)
-    esperadas = [u for u in a.ufs_esperadas.split(",") if u] or ufs_presentes
+    esperadas = list(tse.UFS) if a.ufs_esperadas == "todas" else ([u for u in a.ufs_esperadas.split(",") if u] or ufs_presentes)
     faltando = sorted(set(esperadas) - set(ufs_presentes))
     brasil_completo = not faltando and len(set(esperadas)) == len(tse.UFS)
 

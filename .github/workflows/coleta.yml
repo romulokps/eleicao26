@@ -13,6 +13,9 @@ on:
       limite:
         description: "Só N seções por UF (teste); 0 = todas"
         default: "0"
+      base_run:
+        description: "ID de execução anterior cujos artifacts completam as UFs não coletadas agora (opcional)"
+        default: ""
       commit:
         description: "Commitar parquet/relatório no repositório"
         type: boolean
@@ -22,7 +25,7 @@ on:
     paths: ["execucao.json"]
 
 concurrency:
-  group: coleta-${{ github.ref }}
+  group: coleta2-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -34,6 +37,7 @@ jobs:
       cargo: ${{ steps.m.outputs.cargo }}
       limite: ${{ steps.m.outputs.limite }}
       commit: ${{ steps.m.outputs.commit }}
+      base_run: ${{ steps.m.outputs.base_run }}
     steps:
       - uses: actions/checkout@v4
       - id: m
@@ -42,6 +46,7 @@ jobs:
           IN_UFS: ${{ inputs.ufs }}
           IN_LIMITE: ${{ inputs.limite }}
           IN_COMMIT: ${{ inputs.commit }}
+          IN_BASE_RUN: ${{ inputs.base_run }}
         run: |
           set -o pipefail
           python3 src/matriz.py | tee -a "$GITHUB_OUTPUT"
@@ -93,6 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -100,6 +106,15 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -q -r requirements.txt
+      # UFs de uma execução anterior (as desta execução sobrescrevem, pois são baixadas depois)
+      - uses: actions/download-artifact@v4
+        if: needs.setup.outputs.base_run != ''
+        with:
+          run-id: ${{ needs.setup.outputs.base_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: secoes-${{ needs.setup.outputs.cargo }}-*
+          path: out
+          merge-multiple: true
       - uses: actions/download-artifact@v4
         with:
           pattern: secoes-${{ needs.setup.outputs.cargo }}-*
@@ -108,7 +123,7 @@ jobs:
       - name: merge + relatório
         run: >
           python src/relatorio.py --entrada out --cargo ${{ needs.setup.outputs.cargo }}
-          --ufs-esperadas ${{ needs.setup.outputs.ufs_csv }}
+          --ufs-esperadas ${{ needs.setup.outputs.base_run != '' && 'todas' || needs.setup.outputs.ufs_csv }}
       - name: resumo no job
         run: cat relatorio*.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4

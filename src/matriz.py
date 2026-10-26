@@ -4,7 +4,7 @@ import os
 
 UFS = "ac al am ap ba ce df es go ma mg ms mt pa pb pe pi pr rj rn ro rr rs sc se sp to zz".split()  # = tse.UFS
 
-cfg = {"cargo": "1", "ufs": "todas", "limite": "0", "commit": "true"}
+cfg = {"cargo": "1", "ufs": "todas", "limite": "0", "commit": "true", "base_run": ""}
 if os.environ.get("GITHUB_EVENT_NAME") != "workflow_dispatch" and os.path.exists("execucao.json"):
     cfg.update({k: str(v).lower() for k, v in json.load(open("execucao.json")).items()})
 for k in cfg:
@@ -19,4 +19,5 @@ print(f"ufs={json.dumps(ufs)}")
 print(f"ufs_csv={','.join(ufs)}")
 print(f"cargo={int(cfg['cargo'])}")
 print(f"limite={int(cfg['limite'])}")
+print(f"base_run={cfg['base_run'] if cfg['base_run'].isdigit() else ''}")
 print(f"commit={'true' if cfg['commit'] in ('true', '1', 'sim', 'yes') else 'false'}")
