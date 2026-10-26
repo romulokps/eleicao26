@@ -232,8 +232,17 @@ def main():
         cen[c] = cenario(df, c, c1s, c2s)
 
     L.append("## Resumo\n")
-    L.append(f"- Seções com BU processadas: **{n(tot_sec)}**; com horário de encerramento: **{n(com_hora)}**; "
-             f"seções agregadas (votos no BU da seção principal): {n(sum(m['n_agregadas'] for m in metas.values()))}.")
+    n_nao_inst = int(((df.flag_problema & C.F_NAO_INSTALADA) > 0).sum())
+    L.append(f"- Seções (exceto agregadas): **{n(tot_sec)}**, das quais {n(n_nao_inst)} não instaladas; com horário "
+             f"de encerramento: **{n(com_hora)}**; seções agregadas (votos no BU da seção principal): "
+             f"{n(sum(m['n_agregadas'] for m in metas.values()))}.")
+    hh = df.hora_fechamento.dropna().astype(int)
+    pico = ((hh >= 19 * 60) & (hh < 19 * 60 + 15)).sum()
+    meio = ((hh >= 17 * 60 + 30) & (hh < 19 * 60)).sum()
+    L.append(f"- Formato da distribuição: {f2(pct(((hh >= 17 * 60) & (hh < 17 * 60 + 15)).sum(), len(hh)))}% das "
+             f"seções encerraram entre 17:00 e 17:15; entre 17:30 e 19:00 encerraram só {n(meio)} seções, e há um "
+             f"**segundo pico entre 19:00 e 19:15** ({n(pico)} seções, {f2(pct(pico, len(hh)))}%), compatível com "
+             f"encerramento coordenado às 19h nos locais com prorrogação (ver seção 3).")
     b = acum_s.loc["BRASIL"]
     L.append(f"- Urnas encerradas (Brasil, % das seções): até 17:30 **{f2(b.iloc[0])}%**, até 18:00 "
              f"**{f2(b.iloc[1])}%**, até 18:30 **{f2(b.iloc[2])}%**, até 19:00 **{f2(b.iloc[3])}%**; "

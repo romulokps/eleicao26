@@ -90,3 +90,12 @@ Votação deveria terminar às 17h (Brasília); houve prorrogação até 19h em 
   instaladas (flag 2048, sem nova tentativa).
 - 2026-10-26: Fuso inferido: AM tem 11 municípios em UTC−5 (+2h, ex. Tabatinga, Itamarati); Fernando de
   Noronha −1h; demais = padrão da UF.
+- 2026-10-26: **Rodada final bate exatamente com o oficial Brasil** (Lula 64.256.232; Flávio Bolsonaro
+  59.826.041; brancos 1.430.496; nulos 2.723.305; comparecimento 128.236.074). 499.248 seções (41 não
+  instaladas; 45 BU de SA/cédula; 5.743 urnas de contingência), 17.931 agregadas. Parquet final ≈3,2 MB.
+- Resultado: 98,47% das seções encerraram até 17:30; 1,27% depois das 19:00 (pico 19:00–19:15, concentrado em
+  RJ, SP capital, Salvador, Recife, João Pessoa). Vencedor não muda em nenhum corte.
+
+## Como rodar de novo
+- GitHub → Actions → `coleta-bu` → Run workflow (inputs: cargo, ufs, limite, commit, base_run), ou editar
+  `execucao.json` e dar push. Re-execuções retomam do checkpoint (cache) e só re-baixam seções com falha.
