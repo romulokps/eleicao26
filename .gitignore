@@ -1,0 +1,19 @@
+# só código, dados/secoes_*.parquet, relatorio.md e PNGs vão para o repo
+*
+!*/
+!.gitignore
+!*.py
+!*.yml
+!*.md
+!*.txt
+!*.asn1
+!dados/secoes_*.parquet
+!*.png
+__pycache__/
+checkpoint/
+out/
+work/
+*.bu
+*.imgbu
+*.logjez
+*.rdv
